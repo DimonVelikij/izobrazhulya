@@ -3,6 +3,7 @@
     return [
         ''  =>  [
             'name'      =>  'home',
-            'handler'   =>  'home/index'
+            'handler'   =>  'home/index',
+            'title'     =>  'Главная страница'
         ]
     ];

@@ -3,7 +3,7 @@
 class Router {
 
     /**
-     * routing array
+     * массив роутов
      * @var array
      */
     private $routes;
@@ -17,11 +17,26 @@ class Router {
     }
 
     /**
-     * get uri
+     * получаем uri
      * @return string
      */
     private function getURI() {
         return !empty($_SERVER['REQUEST_URI']) ? trim($_SERVER['REQUEST_URI'], '/') : null;
+    }
+
+    /**
+     * собираем request объект
+     * @param array $path
+     * @return Request
+     */
+    private function getRequest(array $path)
+    {
+        $request = new Request();
+        $request->setRouteName($path['name']);
+        $request->setPage($path['page']);
+        $request->setTitle($path['title']);
+
+        return $request;
     }
 
     /**
@@ -41,10 +56,8 @@ class Router {
 
                 $controller_file = ROOT.'/controllers/'.$controller_name.'.php';
 
-                $request = new Request();
-                $request->setRouteName($path['name']);
-                $request->setPage($path['page']);
-                
+                $request = $this->getRequest($path);
+
                 if (!file_exists($controller_file)) {
                     //рендерим 404
                     break;

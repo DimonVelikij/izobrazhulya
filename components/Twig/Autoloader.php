@@ -14,10 +14,10 @@
  *
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class Twig_Autoloader
+class Autoloader
 {
     /**
-     * Registers Twig_Autoloader as an SPL autoloader.
+     * Registers Autoloader as an SPL autoloader.
      */
     public static function register()
     {

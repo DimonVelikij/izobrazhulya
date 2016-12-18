@@ -1,7 +1,5 @@
 <?php
 
-include_once ROOT . '/components/Twig/Autoloader.php';
-
 class BaseController
 {
     /**
@@ -15,17 +13,23 @@ class BaseController
     protected $params = [];
 
     /**
+     * @var Request
+     */
+    protected $request;
+
+    /**
      * BaseController constructor.
      */
     public function __construct(Request $request)
     {
-        Twig_Autoloader::register();
-        $loader = new Twig_Loader_Filesystem(ROOT . '/resources/views/');
+        $this->request = $request;
+        Autoloader::register();
+        $loader = new Twig_Loader_Filesystem(ROOT . '/resources/views/' . $request->getPage() . '/');
         $this->twig = new Twig_Environment($loader);
     }
 
     /**
-     * render template
+     * рендерим шаблон
      * @param $path
      * @param array $params
      * @return bool
@@ -38,8 +42,21 @@ class BaseController
         $file = $path[1];
 
         $template = $this->twig->loadTemplate($directory . '/' . $file);
+        $params = $this->setRequiredParams($params);
         echo $template->render($params);
 
         return true;
+    }
+
+    /**
+     * устанавливаем обязательные параметры для страницы
+     * @param array $params
+     * @return array
+     */
+    private function setRequiredParams(array $params)
+    {
+        $params['title'] = $this->request->getTitle();
+
+        return $params;
     }
 }
