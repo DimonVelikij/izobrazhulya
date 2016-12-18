@@ -56,6 +56,7 @@ class BaseController
     private function setRequiredParams(array $params)
     {
         $params['title'] = $this->request->getTitle();
+        $params['is_login'] = User::getSessionUser();
 
         return $params;
     }

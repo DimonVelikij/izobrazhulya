@@ -37,3 +37,40 @@ body {
 footer {
     margin: 50px 0;
 }
+
+/* Logo */
+
+.logo-img {
+    height: 120px;
+}
+
+/* Inputs form */
+
+.input-search-hash {
+    margin-bottom: 5px;
+}
+
+/* Color filter */
+
+.color-item {
+    width: 34px;
+    height: 34px;
+    float: left;
+    background-color: red;
+    margin-left: 5px;
+    border-radius: 5px;
+}
+
+.color-item:hover {
+    cursor: pointer;
+}
+
+.color-item_active {
+    opacity: .5;
+}
+
+/* Form */
+
+.required {
+    color: red;
+}

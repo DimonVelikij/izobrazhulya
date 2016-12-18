@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h2 class="page-header">Регистрация пользователя</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 text-left">
+                {% if errors | length %}
+                    {% for error in errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+                <form action="/registration" method="post" novalidate>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>Фамилия <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="f_name" value="{{ f_name }}">
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>Имя <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="s_name" value="{{ s_name }}">
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>Логин <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="login" value="{{ login }}">
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>Пароль <span class="required">*</span></label>
+                            <input type="password" class="form-control" name="password" value="{{ password }}">
+                        </div>
+                    </div>
+                    <div id="success"></div>
+
+                    <input type="submit" name="registration" class="btn btn-primary" value="Зарегистрироваться">
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
