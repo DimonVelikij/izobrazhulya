@@ -60,4 +60,24 @@ class BaseController
 
         return $params;
     }
+    
+    protected function upload()
+    {
+        $image = new Image('image');
+        //если картинка загружена, то делаем уменьшение фото
+        if ($image->isImage() && $image->isValid() === true && $image->upload()) {
+            $water_prefix = '_water';
+            $w = $image->getWidth();
+            $h = $image->getHeight();
+            $sizes = [
+                'large' =>  1,
+                'middle'=>  2,
+                'little'=>  4
+            ];
+            foreach ($sizes as $size => $prop) {
+                $image->resize($w / $prop, $h / $prop, $size);
+                $image->setWaterMark($size, $size . $water_prefix, $prop);
+            }
+        }
+    }
 }
