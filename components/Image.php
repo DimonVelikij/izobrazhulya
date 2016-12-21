@@ -119,7 +119,7 @@ class Image
             if (
                 $this->getImageProperty('size') > 0 &&
                 $this->getImageProperty('size') < $this->b * $this->mb * 10
-            ) {
+            ) {//проверить на ширину и высоту
                 $this->setExt();
                 $this->setImageParams();
                 return true;
@@ -228,10 +228,14 @@ class Image
      * @param $file
      * @param $new_file
      * @param $prop
+     * @param null $w
+     * @param null $h
      */
-    public function setWaterMark($file, $new_file, $prop)
+    public function setWaterMark($file, $new_file, $prop, $w = null, $h = null)
     {
-        $this->resizeWater($this->getWidth()/$prop, $this->getHeight()/$prop);
+        $w = $w ? $w : $this->getWidth()/$prop;
+        $h = $h ? $h : $this->getHeight()/$prop;
+        $this->resizeWater($w, $h);
 
         $stamp = imagecreatefrompng($this->getWaterTmpImage());
         $im = imagecreatefromjpeg($this->getRealPath($file));
@@ -240,5 +244,41 @@ class Image
 
         imagejpeg($im, $this->getRealPath($new_file));
         imagedestroy($im);
+    }
+
+    /**
+     * Создание превью
+     * @param $w
+     * @param $h
+     * @param $file_type
+     */
+    public function previous($w, $h, $file_type)
+    {
+        $maxPreviousSide = max($w, $h);
+        $minOriginSide = min($this->getWidth(), $this->getHeight());
+
+        $originImage = imagecreatefromjpeg($this->getRealPath('origin'));
+        $image = imagecreatetruecolor($maxPreviousSide, $maxPreviousSide);
+        imagecopyresampled($image, $originImage, 0, 0, 0, 0, $maxPreviousSide, $maxPreviousSide, $minOriginSide, $minOriginSide);
+        $cropImage = imagecrop($image, ['x'=>0, 'y'=>0, 'width'=>$w, 'height'=>$h]);
+        imagejpeg($cropImage, $this->getRealPath($file_type));
+        imagedestroy($image);
+        imagedestroy($cropImage);
+        imagedestroy($originImage);
+    }
+
+    /**
+     * Получение наиболее часто встречающихся цветов
+     * @param $file_type
+     * @param $count_colors
+     * @param $step
+     */
+    public function getImagePalette($file_type, $count_colors, $step)
+    {
+        $imagePaletteService = new ImagePalette();
+        $colors = $imagePaletteService->getImageColors($this->getRealPath($file_type), $count_colors, $step);
+        if ($colors) {
+            //запись в базу
+        }
     }
 }

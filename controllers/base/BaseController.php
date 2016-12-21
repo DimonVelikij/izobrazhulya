@@ -67,6 +67,10 @@ class BaseController
         //если картинка загружена, то делаем уменьшение фото
         if ($image->isImage() && $image->isValid() === true && $image->upload()) {
             $water_prefix = '_water';
+            //превью
+            $image->previous(300, 200, 'previous');
+            $image->setWaterMark('previous', 'previous'.$water_prefix, 1, 300, 200);
+
             $w = $image->getWidth();
             $h = $image->getHeight();
             $sizes = [
@@ -78,6 +82,10 @@ class BaseController
                 $image->resize($w / $prop, $h / $prop, $size);
                 $image->setWaterMark($size, $size . $water_prefix, $prop);
             }
+            //определяем наиболее часто встречающиеся цвета
+            $count_colors = 5;
+            $step = 5;
+            $image->getImagePalette('origin', $count_colors, $step);
         }
     }
 }

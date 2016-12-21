@@ -104,7 +104,7 @@ class UserController extends BaseController
     public function cabinetAction(Request $request)
     {
         $this->upload();
-        
+
         return $this->render('user:cabinet.html.twig', [
 
         ]);
