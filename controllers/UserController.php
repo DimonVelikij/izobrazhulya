@@ -103,10 +103,52 @@ class UserController extends BaseController
      */
     public function cabinetAction(Request $request)
     {
-        $this->upload();
+        $price_large = '';
+        $price_middle = '';
+        $price_little = '';
+        $hash_tags = '';
+
+        $errors = false;
+
+        if (isset($_POST['add-image'])) {
+            $price_large = $_POST['price-large'];
+            $price_middle = $_POST['price-middle'];
+            $price_little = $_POST['price-little'];
+            $hash_tags = $_POST['hash-tags'];
+
+            if (!Validation::isNumber($price_large)) {
+                $errors[] = 'Неверно указана цена для большого изображения';
+            }
+            if (!Validation::isNumber($price_middle)) {
+                $errors[] = 'Неверно указана цена для среднего изображения';
+            }
+            if (!Validation::isNumber($price_little)) {
+                $errors[] = 'Неверно указана цена для маленького изображения';
+            }
+            if (!Validation::isEmpty($hash_tags)) {
+                $errors[] = 'Заполните поле "Хеш-теги"';
+            }
+            if ($errors === false) {
+                $price = new Price($price_large, $price_middle, $price_little);
+                $upload = $this->upload($price);
+                if (is_int($upload)) {
+                    $hash_tags_array = explode(',', $hash_tags);
+                    if (count($hash_tags_array)) {
+                        for ($i = 0; $i < count($hash_tags_array); $i++) {
+                            HashTags::addHashTag($upload, trim($hash_tags_array[$i]));
+                        }
+                    }
+                } else {
+                    $errors[] = $upload;
+                }
+            }
+        }
 
         return $this->render('user:cabinet.html.twig', [
-
+            'price_large'   =>  $price_large,
+            'price_middle'  =>  $price_middle,
+            'price_little'  =>  $price_little,
+            'hash_tags'     =>  $hash_tags
         ]);
     }
 }

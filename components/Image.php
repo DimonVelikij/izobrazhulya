@@ -32,6 +32,11 @@ class Image
      */
     private $image_params;
 
+    /**
+     * @var int
+     */
+    private $image_id;
+
     public function __construct($image_name)
     {
         if (isset($_FILES[$image_name]) && isset($_FILES[$image_name]['tmp_name'])) {
@@ -53,7 +58,7 @@ class Image
      */
     public function isImage()
     {
-        return $this->image ? true : false;
+        return $this->image && !empty($this->image['name']) ? true : false;
     }
 
     /**
@@ -66,6 +71,15 @@ class Image
     }
 
     /**
+     * получаем расширение
+     * @return string
+     */
+    public function getExt()
+    {
+        return $this->ext;
+    }
+
+    /**
      * установка параметров изображения
      */
     private function setImageParams()
@@ -74,12 +88,21 @@ class Image
     }
 
     /**
-     * номер фото
+     * устанавливаем id изображения
+     * @param $image_id
+     */
+    public function setImageId($image_id)
+    {
+        $this->image_id = $image_id;
+    }
+
+    /**
+     * получаем id изображения
      * @return string
      */
-    private function getImageId()
+    public function getImageId()
     {
-        return '1';
+        return $this->image_id;
     }
 
     /**
@@ -119,10 +142,16 @@ class Image
             if (
                 $this->getImageProperty('size') > 0 &&
                 $this->getImageProperty('size') < $this->b * $this->mb * 10
-            ) {//проверить на ширину и высоту
-                $this->setExt();
-                $this->setImageParams();
-                return true;
+            ) {
+                $image_params = getimagesize($this->image['tmp_name']);
+                $image_width = $image_params[0];
+                $image_height = $image_params[1];
+                if ($image_width >= 300 && $image_height >= 300) {
+                    $this->setExt();
+                    $this->setImageParams();
+                    return true;
+                }
+                return 'Ширина и высота должна быть больше 300px';
             }
             return 'Размер превышает 10Мб';
         }
@@ -272,13 +301,15 @@ class Image
      * @param $file_type
      * @param $count_colors
      * @param $step
+     * @return array|bool|null
      */
     public function getImagePalette($file_type, $count_colors, $step)
     {
         $imagePaletteService = new ImagePalette();
         $colors = $imagePaletteService->getImageColors($this->getRealPath($file_type), $count_colors, $step);
         if ($colors) {
-            //запись в базу
+            return $colors;
         }
+        return null;
     }
 }

@@ -10,6 +10,31 @@
         <div class="row">
             <div class="col-md-6 text-left">
                 <form action="/cabinet" method="post" enctype="multipart/form-data" novalidate>
+
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>Стоимость большого изображения <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="price-large" value="{{ price_large }}">
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>Стоимость среднего изображения <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="price-middle" value="{{ price_middle }}">
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls">
+                            <label>Стоимость маленького изображения <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="price-little" value="{{ price_little }}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="comment">Хеш-теги <span class="required">*</span></label>
+                        <textarea class="form-control" rows="5" id="comment" name="hash-tags">{{ hash_tags }}</textarea>
+                        <p class="help-block">Вводите через запятую</p>
+                    </div>
+
                     <div class="control-group form-group">
                         <div class="controls">
                             <label>Загрузка изображения <span class="required">*</span></label>
