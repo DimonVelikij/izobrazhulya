@@ -1,6 +1,18 @@
 <?php
 
 return [
+    'cabinet/edit/([0-9]+)'  =>  [
+        'name'      =>  'cabinet_edit_image',
+        'page'      =>  'front',
+        'handler'   =>  'user/cabinetEditImage/$1',
+        'title'     =>  'Кабинет резактирование изображения'
+    ],
+    'cabinet/del/([0-9]+)'  =>  [
+        'name'      =>  'cabinet_del_image',
+        'page'      =>  'front',
+        'handler'   =>  'user/cabinetDelImage/$1',
+        'title'     =>  'Кабинет удаление изображения'
+    ],
     'cabinet'  =>  [
         'name'      =>  'cabinet',
         'page'      =>  'front',

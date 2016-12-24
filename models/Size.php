@@ -28,4 +28,44 @@ class Size
         }
         return true;
     }
+
+    /**
+     * @param $image_id
+     * @return array
+     */
+    public static function getSizesByImageId($image_id)
+    {
+        $db = DB::getConnection();
+
+        $query = "SELECT * FROM size WHERE image=$image_id";
+        $result = $db->query($query);
+        $result->setFetchMode(PDO::PARAM_STR);
+
+        $sizes = [];
+        while ($row = $result->fetch()) {
+            $sizes[(int)$row['price']][] = $row['id'];
+        }
+        krsort($sizes);
+
+        return $sizes;
+    }
+
+    /**
+     * @param $image_id
+     * @param $size_id
+     * @param $price
+     * @return bool
+     */
+    public static function updateSizesPriceByImageId($image_id, $size_id, $price)
+    {
+        $db = DB::getConnection();
+
+        $query = "UPDATE size SET price=:price WHERE image=:image_id AND id=:size_id";
+        $result = $db->prepare($query);
+        $result->bindParam(':price', $price, PDO::PARAM_INT);
+        $result->bindParam(':image_id', $image_id, PDO::PARAM_INT);
+        $result->bindParam(':size_id', $size_id, PDO::PARAM_INT);
+
+        return $result->execute();
+    }
 }

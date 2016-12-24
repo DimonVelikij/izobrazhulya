@@ -8,7 +8,7 @@ class ImageDB
     
     public function __construct()
     {
-        $status = Status::getStatusByAlias('inspection');
+        $status = Status::getStatusByAlias('info');
         if ($status) {
             $this->status = $status['id'];
         }

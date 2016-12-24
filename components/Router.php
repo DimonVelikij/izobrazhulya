@@ -66,7 +66,7 @@ class Router {
                 include_once ($controller_file);
 
                 $controller_object = new $controller_name($request);
-
+                
                 array_unshift($segments, $request);
 
                 $result = call_user_func_array([$controller_object,$action_name], $segments);

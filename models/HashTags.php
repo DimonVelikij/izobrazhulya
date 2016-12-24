@@ -20,4 +20,18 @@ class HashTags
         }
         return true;
     }
+
+    /**
+     * @param $image_id
+     * @return bool
+     */
+    public static function delHashTags($image_id)
+    {
+        $db = DB::getConnection();
+
+        $query = "DELETE FROM hash_tag WHERE image=:image_id";
+        $result = $db->prepare($query);
+        $result->bindParam(':image_id', $image_id, PDO::PARAM_INT);
+        return $result->execute();
+    }
 }
