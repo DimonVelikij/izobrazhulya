@@ -42,7 +42,12 @@ class AjaxController extends BaseController
 
         $result = Sale::addSale($image_id, $total_price);
 
+        $theme = 'Вы купили изображения';
+        $msg = 'message';
+        $mail = mail($email, $theme, $msg);
+
         echo json_encode([
+            'mail'      =>  $mail,
             'success'   =>  $result
         ]);
 
