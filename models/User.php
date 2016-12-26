@@ -47,6 +47,21 @@ class User
     }
 
     /**
+     * @param $user_id
+     * @return mixed
+     */
+    public static function getUserById($user_id)
+    {
+        $db = DB::getConnection();
+        $query = "SELECT * FROM user WHERE id=:user_id";
+        $result = $db->prepare($query);
+        $result->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+        $result->execute();
+
+        return $result->fetch();
+    }
+
+    /**
      * установка авторизованного пользователя
      * @param $value
      */

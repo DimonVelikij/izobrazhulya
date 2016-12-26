@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-12">
-                <h2 class="page-header">Загрузка изображений</h2>
+                <h2 class="page-header">{{ user['f_name'] }} {{ user['s_name'] }}</h2>
             </div>
         </div>
         <div class="row">
@@ -62,7 +62,9 @@
                 {% for image_id, image_params in images %}
                     <div class="col-sm-6 col-md-4">
                         <div class="thumbnail">
-                            <img src="/media/{{ image_id }}/{{ image_params['previous_water'] }}" width="300px" height="200px" alt="...">
+                            <a class="fancybox" rel="group" href="/media/{{ image_id }}/large.jpg">
+                                <img src="/media/{{ image_id }}/{{ image_params['previous'] }}" width="300px" height="200px" alt="...">
+                            </a>
                             <div class="caption">
                                 <div class="alert alert-{{ image_params['status_alias'] }} text-center" role="alert">
                                     <strong>Статус </strong>{{ image_params['status'] }}

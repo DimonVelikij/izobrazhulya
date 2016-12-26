@@ -35,21 +35,8 @@ class Picture
         return $result->execute();
     }
 
-    /**
-     * @param $user_id
-     * @return array
-     */
-    public static function getImagesByUserId($user_id)
+    public static function getImagesResult($result)
     {
-        $db = DB::getConnection();
-
-        $query = "SELECT i.id as image_id, s.alias as status_alias, s.title as status, sz.width, sz.height, sz.file_name, sz.price, it.alias, ht.hash, c.color
-                  FROM image as i, user as u, status as s, size as sz, image_type as it, hash_tag as ht, color as c
-                  WHERE i.user=u.id and u.id=$user_id and i.status=s.id and i.user=u.id and i.id=sz.image and sz.type=it.id and i.id=ht.image and i.id=c.image
-                  ORDER BY i.id DESC";
-        $result = $db->query($query);
-
-        $result->setFetchMode(PDO::PARAM_STR);
         $images = [];
 
         $hash_tags = [];
@@ -85,10 +72,31 @@ class Picture
                 $images[$image_id]['images'] = $image[$image_id];
             }
         }
-
         return $images;
     }
+    /**
+     * @param $user_id
+     * @return array
+     */
+    public static function getImagesByUserId($user_id)
+    {
+        $db = DB::getConnection();
 
+        $query = "SELECT i.id as image_id, s.alias as status_alias, s.title as status, sz.width, sz.height, sz.file_name, sz.price, it.alias, ht.hash, c.color
+                  FROM image as i, user as u, status as s, size as sz, image_type as it, hash_tag as ht, color as c
+                  WHERE i.user=u.id and u.id=$user_id and i.status=s.id and i.user=u.id and i.id=sz.image and sz.type=it.id and i.id=ht.image and i.id=c.image
+                  ORDER BY i.id DESC";
+        $result = $db->query($query);
+
+        $result->setFetchMode(PDO::PARAM_STR);
+
+        return self::getImagesResult($result);
+    }
+
+    /**
+     * @param $image_id
+     * @return array
+     */
     public static function getImageById($image_id)
     {
         $db = DB::getConnection();
@@ -126,5 +134,67 @@ class Picture
         $image_params['hash_tags'] = $hash_tags;
 
         return $image_params;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getImages()
+    {
+        $db = DB::getConnection();
+
+        $query = "SELECT i.id as image_id, s.alias as status_alias, s.title as status, sz.width, sz.height, sz.file_name, sz.price, it.alias, ht.hash, c.color
+                  FROM image as i, user as u, status as s, size as sz, image_type as it, hash_tag as ht, color as c
+                  WHERE i.user=u.id and i.status=s.id and i.user=u.id and i.id=sz.image and sz.type=it.id and i.id=ht.image and i.id=c.image
+                  ORDER BY i.id DESC";
+        $result = $db->query($query);
+
+        $result->setFetchMode(PDO::PARAM_STR);
+
+        return self::getImagesResult($result);
+    }
+
+    public static function getImageByStatus($status)
+    {
+        $db = DB::getConnection();
+
+        $query = "SELECT i.id as image_id, s.alias as status_alias, s.title as status, sz.width, sz.height, sz.file_name, sz.price, it.alias, ht.hash, c.color
+                  FROM image as i, user as u, status as s, size as sz, image_type as it, hash_tag as ht, color as c
+                  WHERE i.user=u.id and i.status=s.id and i.user=u.id and i.id=sz.image and sz.type=it.id and i.id=ht.image and i.id=c.image and s.alias='$status'
+                  ORDER BY i.id DESC";
+        $result = $db->query($query);
+
+        $result->setFetchMode(PDO::PARAM_STR);
+
+        return self::getImagesResult($result);
+    }
+
+    /**
+     * @return array
+     */
+    public static function getImagesWithStatus()
+    {
+        $db = DB::getConnection();
+
+        $query = "SELECT COUNT(i.id) as count, s.alias FROM image as i, status as s WHERE i.status=s.id GROUP BY i.status";
+        $result = $db->query($query);
+        $result->setFetchMode(PDO::PARAM_STR);
+
+        $images = [];
+        while ($row = $result->fetch()) {
+            $images[$row['alias']] = $row['count'];
+        }
+        return $images;
+    }
+
+    public static function updateImageStatus($image_id, $status_id)
+    {
+        $db = DB::getConnection();
+        $query = "UPDATE image SET status=:status_id WHERE id=:image_id";
+        $result = $db->prepare($query);
+        $result->bindParam(':status_id', $status_id, PDO::PARAM_INT);
+        $result->bindParam(':image_id', $image_id, PDO::PARAM_STR);
+
+        return $result->execute();
     }
 }

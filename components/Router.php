@@ -40,6 +40,29 @@ class Router {
     }
 
     /**
+     * @param Request $request
+     */
+    private function isAdmin(Request $request)
+    {
+        if($request->getPage() == 'admin' && $request->getRouteName() != 'admin_login') {
+            if (Admin::getSessionUserAdmin() && Admin::getSessionTimeUserAdmin()) {
+                if (Admin::getAdminByRand(Admin::getSessionUserAdmin())) {
+                    $admin_auth_time = Admin::getSessionTimeUserAdmin();
+                    if(time() - $admin_auth_time > 1800) {
+                        header("Location:/admin/login");
+                    }
+                }
+                else {
+                    header("Location:/admin/login");
+                }
+            }
+            else {
+                header("Location:/admin/login");
+            }
+        }
+    }
+
+    /**
      * run application
      */
     public function run() {
@@ -57,6 +80,7 @@ class Router {
                 $controller_file = ROOT.'/controllers/'.$controller_name.'.php';
 
                 $request = $this->getRequest($path);
+                $this->isAdmin($request);
 
                 if (!file_exists($controller_file)) {
                     //рендерим 404

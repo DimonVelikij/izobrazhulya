@@ -57,8 +57,21 @@ class BaseController
     {
         $params['title'] = $this->request->getTitle();
         $params['is_login'] = User::getSessionUser();
+        $params['user'] = $this->getUser();
 
         return $params;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    private function getUser()
+    {
+        $user = null;
+        if ($user_id = User::getSessionUser()) {
+            $user = User::getUserById($user_id);
+        }
+        return $user;
     }
 
     /**

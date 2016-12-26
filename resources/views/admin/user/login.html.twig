@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+
+    <link rel="stylesheet" href="/resources/css/style.css">
+    <link rel="stylesheet" href="/resources/css/bootstrap.min.css">
+
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <h2 class="page-header">{{ title }}</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 text-center">
+                {% if errors | length %}
+                    {% for error in errors %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+                <form action="/admin/login" method="post" novalidate>
+
+                    <div class="control-group form-group">
+                        <div class="controls text-left">
+                            <label>Логин <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="login" value="{{ login }}">
+                        </div>
+                    </div>
+                    <div class="control-group form-group">
+                        <div class="controls text-left">
+                            <label>Пароль <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="password" value="{{ password }}">
+                        </div>
+                    </div>
+
+                    <input type="submit" name="admin-login" class="btn btn-primary" value="Войти">
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

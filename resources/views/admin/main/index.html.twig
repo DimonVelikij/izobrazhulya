@@ -1,0 +1,75 @@
+{% extends 'base.html.twig' %}
+
+{% block content %}
+    <div class="container">
+        {% if images | length %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="page-header">{{ caption }} (всего {{ images | length }})</h2>
+                </div>
+            </div>
+            <div class="row">
+                {% for image_id, image_params in images %}
+                    <div class="col-sm-6 col-md-4">
+                        <div class="thumbnail">
+                            <img src="/media/{{ image_id }}/{{ image_params['previous'] }}" width="300px" height="200px" alt="...">
+                            <div class="caption">
+                                <div class="alert alert-{{ image_params['status_alias'] }} text-center" role="alert">
+                                    <strong>Статус </strong>{{ image_params['status'] }}
+                                </div>
+                                <h3>Другие изображения</h3>
+                                <table class="table">
+                                    <tr class="text-center">
+                                        <td><strong>Ширина</strong></td>
+                                        <td><strong>Высота</strong></td>
+                                        <td><strong>Цена</strong></td>
+                                    </tr>
+                                    {% for image in image_params['images'] %}
+                                        <tr class="text-center">
+                                            <td>{{ image['width'] }} px</td>
+                                            <td>{{ image['height'] }} px</td>
+                                            <td>{{ image['price'] }} р.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                                <h3>Хеш теги</h3>
+                                {% set hash_tags = '' %}
+                                {% for hash in image_params['hash_tags'] %}
+                                    {% set hash_tags = loop.first ? '<a>#'~hash~'</a>' : hash_tags~',<a>#'~hash~'</a>' %}
+                                {% endfor %}
+                                <p>{{ hash_tags | raw }}</p>
+                                <h3>Цветовая гамма</h3>
+                                <div class="btn-group" style="margin-bottom: 10px">
+                                    {% for color in image_params['colors'] %}
+                                        {% set color = '#'~color %}
+                                        <div class="color-item" style="background-color: {{ color }}"></div>
+                                    {% endfor %}
+                                </div>
+                                <p>
+                                    {% if
+                                        image_params['status_alias'] == 'info' or
+                                        image_params['status_alias'] == 'danger'
+                                    %}
+                                        <a href="/admin/success/{{ image_id }}" class="btn btn-primary" role="button">Одобрить</a>
+                                    {% endif %}
+                                    {% if
+                                        image_params['status_alias'] == 'info' or
+                                        image_params['status_alias'] == 'success'
+                                    %}
+                                        <a href="/admin/danger/{{ image_id }}" class="btn btn-danger" role="button">Отклонить</a>
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="page-header">Нет изображений</h2>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

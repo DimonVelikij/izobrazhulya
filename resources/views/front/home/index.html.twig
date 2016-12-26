@@ -1,8 +1,49 @@
 {% extends 'base.html.twig' %}
 
 {% block content %}
-    <div class="container">
-
+    <div class="container" ng-controller="MainCtrl" ng-cloak>
+        <div class="loader-layer" ng-show="loader">
+            <img class="loader" src="/resources/images/giphy.gif" width="300px" height="300px" alt="">
+        </div>
+        <div class="loader-layer" ng-show="layerPay"></div>
+        <div id="pay-layer" ng-show="layerPay">
+            <div class="row">
+                <div class="text-center">
+                    <h2>Покупка изображения</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="text-center">
+                    <img src="/media/[[payImage.id]]/[[payImage.previous_water]]" width="300px" height="200px" alt="...">
+                </div>
+                <div class="col-lg-12">
+                    <div class="control-group form-group text-center">
+                        <h3>Сумма к отплате: [[summ]] р.</h3>
+                        <div class="controls">
+                            <label>Ваш e-mail <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="email" ng-model="email">
+                            <label>Номер банковской карты <span class="required">*</span></label>
+                            <input type="text" class="form-control" name="cart" ng-model="cart">
+                            <a style="margin-top: 10px" class="btn btn-primary" ng-click="paySubmit()" role="button">Купить</a>
+                            <a style="margin-top: 10px" class="btn btn-danger" ng-click="closeLayerPay()" role="button">Закрыть</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="loader-layer" ng-show="layerSuccess"></div>
+        <div id="pay-layer" ng-show="layerSuccess">
+            <div class="row">
+                <div class="text-center">
+                    <h2>Вам на почту выслалы изображения</h2>
+                </div>
+                <div class="col-lg-12">
+                    <div class="control-group form-group text-center">
+                        <a style="margin-top: 10px" class="btn btn-danger" ng-click="closeLayerPay()" role="button">Закрыть</a>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-3 col-sm-3 logo-img">
                 <a href="/" class="pull-left"><img width="120px" height="120px"  src="/resources/images/logo.png"></a>
@@ -11,15 +52,12 @@
                 <div class="well">
                     <div class="input-group input-search-hash">
                         <span class="input-group-addon">Хеш-теги</span>
-                        <input type="text" class="form-control" placeholder="универ,общага">
+                        <input type="text" class="form-control" placeholder="универ,общага" ng-model="hashFilter">
                     </div>
-                    <div class="btn-group">
-                        {#<button type="button" class="btn btn-default">Все</button>
-                        <button type="button" class="btn btn-default">Большие</button>
-                        <button type="button" class="btn btn-default">Средние</button>
-                        <button type="button" class="btn btn-default">Маленькие</button>#}
-                        <div class="color-item"></div>
-                        <div class="color-item"></div>
+                    <div class="input-group input-search-hash" ng-show="colorFilter.length || hashFilter.length">
+                        <span class="input-group-addon" ng-show="colorFilter.length">Выбранные цвета</span>
+                        <div ng-repeat="color in colorFilter" class="color-item" style="background-color: #[[color]]"></div>
+                        <a class="btn btn-default" ng-click="resetFilter()">Сбросить</a>
                     </div>
                 </div>
             </div>
@@ -31,48 +69,43 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-6 col-md-4">
+            <div class="col-sm-6 col-md-4" ng-repeat="(imageId, image) in images" ng-show="image.filtered">
                 <div class="thumbnail">
-                    <img src="/resources/images/logo.png" width="300px" height="200px" alt="...">
+                    <a class="fancybox" rel="group" href="/media/[[imageId]]/large_water.jpg">
+                        <img src="/media/[[imageId]]/[[image.previous_water]]" width="300px" height="200px" alt="...">
+                    </a>
                     <div class="caption">
-                        <h3>Ярлык эскиза</h3>
-                        <p>text</p>
-                        <p><a href="#" class="btn btn-primary" role="button">Кнопка</a> <a href="#" class="btn btn-default" role="button">Кнопка</a></p>
+                        <h3>Хеш теги</h3>
+                        <p>
+                            <a ng-repeat="hash in image.hash_tags" ng-click="setHashTagFilter(hash)">#[[hash]]&nbsp;&nbsp;</a>
+                        </p>
+                        <h3>Цветовая гамма</h3>
+                        <div class="btn-group" style="margin-bottom: 10px" ng-repeat="color in image.colors">
+                            <div class="color-item" style="background-color: #[[color]]" ng-click="setColorFilter(color)"></div>
+                        </div>
+                        <h3 ng-show="toggleImageSize[imageId]">Выберите размеры</h3>
+                        <table ng-show="toggleImageSize[imageId]" class="table">
+                            <tr class="text-center">
+                                <td></td>
+                                <td><strong>Ширина</strong></td>
+                                <td><strong>Высота</strong></td>
+                                <td><strong>Цена</strong></td>
+                            </tr>
+                            <tr class="text-center" ng-repeat="size in image.images">
+                                <td>
+                                    <input type="checkbox" ng-model="pay[imageId][size.price]">
+                                </td>
+                                <td>[[size.width]] px</td>
+                                <td>[[size.height]] px</td>
+                                <td>[[size.price]] р.</td>
+                            </tr>
+                        </table>
+                        <p>
+                            <a ng-click="toPay(imageId); toggleImageSize[imageId] = !toggleImageSize[imageId]" class="btn btn-primary" role="button">Купить</a>
+                            <a ng-show="toggleImageSize[imageId]" ng-click="toggleImageSize[imageId] = false" class="btn btn-info" role="button">Свернуть</a>
+                        </p>
                     </div>
                 </div>
-            </div>
-            <div class="col-sm-6 col-md-4">
-                <div class="thumbnail">
-                    <img src="/resources/images/logo.png" width="300px" height="200px" alt="...">
-                    <div class="caption">
-                        <h3>Ярлык эскиза</h3>
-                        <p>text</p>
-                        <p><a href="#" class="btn btn-primary" role="button">Кнопка</a> <a href="#" class="btn btn-default" role="button">Кнопка</a></p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-6 col-md-4">
-                <div class="thumbnail">
-                    <img src="/resources/images/logo.png" width="300px" height="200px" alt="...">
-                    <div class="caption">
-                        <h3>Ярлык эскиза</h3>
-                        <p>text</p>
-                        <p><a href="#" class="btn btn-primary" role="button">Кнопка</a> <a href="#" class="btn btn-default" role="button">Кнопка</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12 text-center">
-                <ul class="pagination">
-                    <li><a href="#">&laquo;</a></li>
-                    <li><a href="#">1</a></li>
-                    <li><a href="#">2</a></li>
-                    <li><a href="#">3</a></li>
-                    <li><a href="#">4</a></li>
-                    <li><a href="#">5</a></li>
-                    <li><a href="#">&raquo;</a></li>
-                </ul>
             </div>
         </div>
     </div>
